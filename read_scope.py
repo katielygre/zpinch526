@@ -2,8 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import sys
+from pathlib import Path
+import re
 
-def read_oscilloscope_data(filename, discharge_V=9., Osc_id=1, diag='Rogowski'):
+# data_dict = {
+#     discharge_V: {
+#         "Rogowski": {"Time": None, "Voltage": None},
+#         "M1": {"Time": None, "Voltage": None},
+#         "M2": {"Time": None, "Voltage": None},
+#         "M4": {"Time": None, "Voltage": None},
+#         "M5": {"Time": None, "Voltage": None},
+#         "M7": {"Time": None, "Voltage": None}
+#     }
+# }
+
+def read_oscilloscope_data(filename, data_dict={}, discharge_V=9., Osc_id=1, diag='Rogowski'):
     """
     Reads the specified channel data from the oscilloscope CSV file.
     channel_index should be 0 for the first channel, 1 for the second, etc.
@@ -11,16 +25,17 @@ def read_oscilloscope_data(filename, discharge_V=9., Osc_id=1, diag='Rogowski'):
     # Calculate the column index for the Time and Voltage data
     # Each channel block has 5 columns, with a blank column in between each block
 
-    data_dict = {
-        discharge_V: {
-            "Rogowski": {"Time": None, "Voltage": None},
-            "M1": {"Time": None, "Voltage": None},
-            "M2": {"Time": None, "Voltage": None},
-            "M4": {"Time": None, "Voltage": None},
-            "M5": {"Time": None, "Voltage": None},
-            "M7": {"Time": None, "Voltage": None}
-        }
+    try:
+        data_dict[discharge_V] = {
+        "Rogowski": {"Time": None, "Voltage": None},
+        "M1": {"Time": None, "Voltage": None},
+        "M2": {"Time": None, "Voltage": None},
+        "M4": {"Time": None, "Voltage": None},
+        "M5": {"Time": None, "Voltage": None},
+        "M7": {"Time": None, "Voltage": None}
     }
+    except Exception as e:
+        print(f"Please input a dictionary into the 'data_dict' argument: {e}")
 
     mapping = {1: {
                 'Rogowski': {"N_channels": 1, "diag_id": ["Rogowski"]}, 
@@ -52,11 +67,23 @@ def read_oscilloscope_data(filename, discharge_V=9., Osc_id=1, diag='Rogowski'):
 
     return data_dict
 
-discharge_voltages = [7.5, 9., 10.5, 12.]
 
-for discharge_voltage in discharge_voltages:
-    data_dict = read_oscilloscope_data()
+files = sys.argv[1:]
+filepaths = [Path(file) for file in files]
+data_dict = {}
+for fpath in filepaths:
 
+
+    data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Mirnov')
+    if osc_id==1:
+        data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Rogowski')
+    
+
+
+
+
+
+# discharge_voltages = [7.5, 9., 10.5, 12.]
 
 # O1_dict = {
 # 7.5: {
