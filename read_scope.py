@@ -17,7 +17,7 @@ import re
 #     }
 # }
 
-def read_oscilloscope_data(filename, data_dict={}, discharge_V=9., Osc_id=1, diag='Rogowski'):
+def read_oscilloscope_data(filename, data_dict={}, discharge_V=9., Osc_id=1, diag='rogowski'):
     """
     Reads the specified channel data from the oscilloscope CSV file.
     channel_index should be 0 for the first channel, 1 for the second, etc.
@@ -26,23 +26,25 @@ def read_oscilloscope_data(filename, data_dict={}, discharge_V=9., Osc_id=1, dia
     # Each channel block has 5 columns, with a blank column in between each block
 
     try:
-        data_dict[discharge_V] = {
-        "Rogowski": {"Time": None, "Voltage": None},
-        "M1": {"Time": None, "Voltage": None},
-        "M2": {"Time": None, "Voltage": None},
-        "M4": {"Time": None, "Voltage": None},
-        "M5": {"Time": None, "Voltage": None},
-        "M7": {"Time": None, "Voltage": None}
-    }
+    #     data_dict[discharge_V] = {
+    #     "Rogowski": {"Time": None, "Voltage": None},
+    #     "M1": {"Time": None, "Voltage": None},
+    #     "M2": {"Time": None, "Voltage": None},
+    #     "M4": {"Time": None, "Voltage": None},
+    #     "M5": {"Time": None, "Voltage": None},
+    #     "M7": {"Time": None, "Voltage": None}
+    # }
+        if discharge_V not in data_dict:
+            data_dict[discharge_V] = {}
     except Exception as e:
         print(f"Please input a dictionary into the 'data_dict' argument: {e}")
 
     mapping = {1: {
-                'Rogowski': {"N_channels": 1, "diag_id": ["Rogowski"]}, 
-                'Mirnov': {"N_channels": 2, "diag_id": ["M1", "M5"]}
+                'rogowski': {"N_channels": 1, "diag_id": ["Rogowski"]}, 
+                'mirnov': {"N_channels": 2, "diag_id": ["M1", "M5"]}
                 }, 
                2: {
-                'Mirnov': {"N_channels": 2, "diag_id": ["M4", "M7"]}
+                'mirnov': {"N_channels": 2, "diag_id": ["M4", "M7"]}
                 }
                 }
     try:
@@ -58,25 +60,27 @@ def read_oscilloscope_data(filename, data_dict={}, discharge_V=9., Osc_id=1, dia
         hor_scale = float(scale['scale'][11])
         yzero = float(scale['scale'][13])
         data = pd.read_csv(filename, skiprows=10, usecols=[base_column, base_column + 1], header=None, names=['Time', 'Voltage'])
-        V = (data['Voltage'] - yzero) / vert_scale # Volts
-        T = data['Time'] / hor_scale * 1e6 # µs
+        V_arr = data['Voltage'].to_numpy()
+        T_arr = data['Time'].to_numpy()
+        V = V_arr / vert_scale # Volts
+        T = T_arr / hor_scale * 1e6 # µs
         diag_id = mapping[Osc_id][diag]["diag_id"][channel_index]
-
-        data_dict[discharge_V][diag_id]["Time"] = T
-        data_dict[discharge_V][diag_id]["Voltage"] = V
+        data_dict[discharge_V][diag_id] = {"Time": T, "Voltage": V}
+        # data_dict[discharge_V][diag_id]["Time"] = T
+        # data_dict[discharge_V][diag_id]["Voltage"] = V
 
     return data_dict
 
 
-files = sys.argv[1:]
-filepaths = [Path(file) for file in files]
-data_dict = {}
-for fpath in filepaths:
+# files = sys.argv[1:]
+# filepaths = [Path(file) for file in files]
+# data_dict = {}
+# for fpath in filepaths:
 
 
-    data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Mirnov')
-    if osc_id==1:
-        data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Rogowski')
+    # data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Mirnov')
+    # if osc_id==1:
+    #     data_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=discharge_voltage, Osc_id=osc_id, diag='Rogowski')
     
 
 
