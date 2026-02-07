@@ -49,3 +49,18 @@ def get_STFT(data, L, W):
             vals['L'] = L
             vals['W'] = W
     return data_copy
+
+def get_STFT2(data, L, W):
+    data_copy = deepcopy(data)
+    for d in data_copy.values():
+        for diags in d.values():
+            for vals in diags.values():
+                time = vals['Time']
+                V = vals['Voltage']
+                Vhat, T, F = STFT2(V, time, L=L, W=W)
+                vals['Vhat'] = Vhat
+                vals['T'] = T
+                vals['F'] = F
+                vals['L'] = L
+                vals['W'] = W
+    return data_copy
