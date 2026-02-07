@@ -72,8 +72,8 @@ def read_oscilloscope_data(
         )
         V_arr = data["Voltage"].to_numpy()
         T_arr = data["Time"].to_numpy()
-        V = V_arr / vert_scale  # Volts
-        T = T_arr / hor_scale * 1e6  # µs
+        V = V_arr  # Volts
+        T = T_arr * 1e6  # µs
         diag_id = mapping[osc_id][diag]["diag_id"][channel_index]
         data_dict[discharge_V][diag_id] = {"Time": T, "Voltage": V}
         # data_dict[discharge_V][diag_id]["Time"] = T
