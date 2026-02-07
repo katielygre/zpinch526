@@ -19,7 +19,7 @@ import re
 
 
 def read_oscilloscope_data(
-    filename, data_dict=None, discharge_V=9.0, Osc_id=1, diag="rogowski"
+    filename, data_dict=None, discharge_V=9.0, osc_id=1, diag="rogowski"
 ):
     """
     Reads the specified channel data from the oscilloscope CSV file.
@@ -30,7 +30,6 @@ def read_oscilloscope_data(
 
     if data_dict is None:
         data_dict = {}
-
     try:
         #     data_dict[discharge_V] = {
         #     "Rogowski": {"Time": None, "Voltage": None},
@@ -53,7 +52,7 @@ def read_oscilloscope_data(
         2: {"mirnov": {"N_channels": 2, "diag_id": ["M4", "M7"]}},
     }
     try:
-        N_channels = mapping[Osc_id][diag]["N_channels"]
+        N_channels = mapping[osc_id][diag]["N_channels"]
     except Exception as e:
         print(f"Invalid input for 'diag' or 'Osc_id': {e}")
 
@@ -75,7 +74,7 @@ def read_oscilloscope_data(
         T_arr = data["Time"].to_numpy()
         V = V_arr / vert_scale  # Volts
         T = T_arr / hor_scale * 1e6  # µs
-        diag_id = mapping[Osc_id][diag]["diag_id"][channel_index]
+        diag_id = mapping[osc_id][diag]["diag_id"][channel_index]
         data_dict[discharge_V][diag_id] = {"Time": T, "Voltage": V}
         # data_dict[discharge_V][diag_id]["Time"] = T
         # data_dict[discharge_V][diag_id]["Voltage"] = V
