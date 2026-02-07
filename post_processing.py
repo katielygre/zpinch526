@@ -30,48 +30,78 @@ from collections import defaultdict
 # plt.savefig("10.5volatge.jpg")
 # plt.show()
 
+folders = ["0_5_cm", "3_5_cm", "6_5_cm", "9_5_cm", "12_5_cm", "15_5_cm"]
+
+all_data = {}
+
+valid_diags = ["mirnov", "rogowski"]
+
+for folder in folders:
+    folder_path = Path(folder)
+    filepaths = sorted(folder_path.glob("*.csv"))
+
+    data_dict = {}
+
+    for filepath in filepaths:
+        try:
+            dv, oi, diag = parse_filename(filepath)
+        except ValueError:
+            print(f"Skipping {filepath.name} (bad filename)")
+            continue
+
+        if diag not in valid_diags:
+            print(f"Skipping {filepath.name}")
+            continue
+
+        read_oscilloscope_data(filepath, data_dict, dv, oi, diag)
+
+    all_data[folder] = data_dict
+
+print(all_data.keys())
+
+# Output: dict_keys(['0_5_cm', '3_5_cm', '6_5_cm', '9_5_cm', '12_5_cm', '15_5_cm'])
 
 data_dict = {}
 
-# filepaths = [
-#     "12_5_cm/10_5_kV_O2_Mir.csv",
-#     "12_5_cm/10_5_kV_O1_Mir.csv",
-#     "12_5_cm/10_5_kV_O1_Rog.csv",
-# ]
+# # filepaths = [
+# #     "12_5_cm/10_5_kV_O2_Mir.csv",
+# #     "12_5_cm/10_5_kV_O1_Mir.csv",
+# #     "12_5_cm/10_5_kV_O1_Rog.csv",
+# # ]
 
-filepaths = sys.argv[1:] 
-fpaths = [Path(filepath) for filepath in filepaths if filepath.endswith('csv')]
+# filepaths = sys.argv[1:]
+# fpaths = [Path(filepath) for filepath in filepaths if filepath.endswith('csv')]
 
-for fpath in fpaths:
-    dv, oi, diag = parse_filename(fpath)
-    file_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=dv, osc_id=oi, diag=diag)
-
-L=0.1
-W=1000
-new_dict = get_STFT(file_dict, L=L, W=W)
-
-fig, axs = plt.subplots(2,1, figsize=(10, 7), constrained_layout=True)
-ax = axs.flatten()
-plot_raw(file_dict, ax[0], discharge_V=10.5, diag='M1')
-plot_raw(file_dict, ax[0], discharge_V=10.5, diag='M5')
-plot_raw(file_dict, ax[1], discharge_V=10.5, diag='M4')
-plot_raw(file_dict, ax[1], discharge_V=10.5, diag='M7')
-ax[0].grid()
-ax[0].legend()
-ax[1].grid()
-ax[1].legend()
-fig.suptitle(rf"Mirnov Coil Raw Data", fontsize=15)
-
-diag_of_interest = "M1"
-Frange = (50, 500)
-
-fig1, ax1 = plt.subplots(figsize=(10,7), constrained_layout=True)
-cf = plot_STFT(new_dict, ax1, discharge_V=10.5, diag=diag_of_interest, Frange=Frange)
-cb = plt.colorbar(cf, ax=ax1, location='right', shrink=0.8)
-cb.set_label(rf"Spectral Power ($V^2$)")
-ax1.grid()
-fig1.suptitle(rf"STFT on Mirnov Coil {diag_of_interest} Data", fontsize=15)
+# for fpath in fpaths:
+#     dv, oi, diag = parse_filename(fpath)
+#     file_dict = read_oscilloscope_data(fpath, data_dict, discharge_V=dv, osc_id=oi, diag=diag)
 
 
+# L = 0.1
+# W = 1000
+# new_dict = get_STFT(file_dict, L=L, W=W)
 
-plt.show()
+# fig, axs = plt.subplots(2, 1, figsize=(10, 7), constrained_layout=True)
+# ax = axs.flatten()
+# plot_raw(file_dict, ax[0], discharge_V=10.5, diag="M1")
+# plot_raw(file_dict, ax[0], discharge_V=10.5, diag="M5")
+# plot_raw(file_dict, ax[1], discharge_V=10.5, diag="M4")
+# plot_raw(file_dict, ax[1], discharge_V=10.5, diag="M7")
+# ax[0].grid()
+# ax[0].legend()
+# ax[1].grid()
+# ax[1].legend()
+# fig.suptitle(rf"Mirnov Coil Raw Data", fontsize=15)
+
+# diag_of_interest = "M1"
+# Frange = (50, 500)
+
+# fig1, ax1 = plt.subplots(figsize=(10, 7), constrained_layout=True)
+# cf = plot_STFT(new_dict, ax1, discharge_V=10.5, diag=diag_of_interest, Frange=Frange)
+# cb = plt.colorbar(cf, ax=ax1, location="right", shrink=0.8)
+# cb.set_label(rf"Spectral Power ($V^2$)")
+# ax1.grid()
+# fig1.suptitle(rf"STFT on Mirnov Coil {diag_of_interest} Data", fontsize=15)
+
+
+# plt.show()
