@@ -57,6 +57,8 @@ new_dict = get_STFT2(file_dict, L=L, W=W)
 electrode_gap = 12.5 # cm
 discharge_voltage = 10.5 # kV
 
+###### PLOTTING ######
+
 fig, axs = plt.subplots(2, 1, figsize=(10, 7), constrained_layout=True)
 ax = axs.flatten()
 plot_raw1(file_dict, ax[0], elec_gap=electrode_gap, discharge_V=discharge_voltage, diag="M1")

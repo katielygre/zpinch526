@@ -98,6 +98,9 @@ def parse_filename(filepath):
     return discharge_voltage, oscilloscope_index, probe
 
 def parse_filepath(filepath):
+    '''
+    A new version of this function can be written depending on how the user chooses to name the saved csv filepaths. The ouput should remain the same and return the discharge voltage (in kV), the oscilloscope index (1 or 2), the diagnostic probe ("rogowski" or "mirnov") and the electrode gap distance (in cm)
+    '''
     fname = Path(filepath)
     filename = fname.name
     fparent = fname.parent.name
@@ -184,29 +187,53 @@ def get_oscilloscope_data(
 
 
 # data_dict = {
-# 7.5: {
-#     "M1": {
-#         'Time': np.array([]),
-#         'Voltage': np.array([])
+#     15.5: {        
+#         7.5: {
+#             "M1": {
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M4':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M5':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M7':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'Rogowski':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             }
+#         },
+#         9.0: {
+#             "M1": {
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M4':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M5':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'M7':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             },
+#             'Rogowski':{
+#                 'Time': np.array([]),
+#                 'Voltage': np.array([])
+#             }
+#         },
 #     },
-#     'M4':{
-#         'Time': np.array([]),
-#         'Voltage': np.array([])
-#     },
-#     'M5':{
-#         'Time': np.array([]),
-#         'Voltage': np.array([])
-#     },
-#     'M7':{
-#         'Time': np.array([]),
-#         'Voltage': np.array([])
-#     },
-#     'Rogowski':{
-#         'Time': np.array([]),
-#         'Voltage': np.array([])
-#     },
-# },
-# 9.0: {
-#     'Discharge Voltage': 9.0, #kV
-# }
+#     12.5: {
+        
+#         }
 # }
